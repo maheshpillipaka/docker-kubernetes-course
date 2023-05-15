@@ -13,7 +13,7 @@ steps:
 - task: AzureCLI@2
   displayName: Docker Build & Push
   inputs:
-    azureSubscription: 'Free Trail(0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
+    azureSubscription: 'Free Trail (0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -42,7 +42,7 @@ steps:
   displayName: Kubernetes Deploy
   inputs:
     connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: 'Free Trail(0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
+    azureSubscriptionEndpoint: 'Free Trail (0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
     azureResourceGroup: 'kuberneteswebapp'
     kubernetesCluster: 'KubernetesCluster'
     namespace: 'default'
