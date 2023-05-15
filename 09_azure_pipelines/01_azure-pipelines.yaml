@@ -43,7 +43,7 @@ steps:
   inputs:
     connectionType: 'Azure Resource Manager'
     azureSubscriptionEndpoint: 'Free Trail (0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
-    azureResourceGroup: 'rg-aks-cluster'
+    azureResourceGroup: 'kuberneteswebapp'
     kubernetesCluster: 'aks-cluster'
     namespace: 'default'
     command: 'apply'
