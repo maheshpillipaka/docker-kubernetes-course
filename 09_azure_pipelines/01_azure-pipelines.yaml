@@ -1,121 +1,53 @@
-
-
-
-
-
-trigger: none
-
-# - main
-
-
-
+trigger: none
+# - main
 
 pool:
-
-  vmImage: ubuntu-latest
-
-
-
+  vmImage: ubuntu-latest
 
 variables:
-
-  acr_name: productstore
-
-  tag: 1.0.0-$(Build.BuildId)
-
-
-
+  acr_name: contosoteam7
+  tag: 1.0.0-$(Build.BuildId)
 
 steps:
 
+- task: AzureCLI@2
+  displayName: Docker Build & Push
+  inputs:
+    azureSubscription: 'Free Trail(0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      docker build -t $(acr_name).azurecr.io/webapp:$(tag) app-dotnet
+      az acr login -n $(acr_name)
+      docker push $(acr_name).azurecr.io/webapp:$(tag)
+      
+- task: qetza.replacetokens.replacetokens-task.replacetokens@3
+  displayName: 'Replace Image TAG'
+  inputs:
+    rootDirectory: '02_kubernetes_aks'
+    targetFiles: 'app-deploy.yaml'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '__'
+    tokenSuffix: '__'
+    useLegacyPattern: false
+    enableTransforms: false
+    enableTelemetry: true
 
+- script: cat 02_kubernetes_aks/app-deploy.yaml
 
-
-- task: AzureCLI@2
-
-  displayName: Docker Build & Push
-
-  inputs:
-
-    azureSubscription: 'Free Trial (0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
-
-    scriptType: 'bash'
-
-    scriptLocation: 'inlineScript'
-
-    inlineScript: |
-
-      docker build -t $(acr_name).azurecr.io/webapp:$(tag) app-dotnet
-
-      az acr login -n $(acr_name)
-
-      docker push $(acr_name).azurecr.io/webapp:$(tag)
-
-      
-
-- task: qetza.replacetokens.replacetokens-task.replacetokens@3
-
-  displayName: 'Replace Image TAG'
-
-  inputs:
-
-    rootDirectory: '02_kubernetes_aks'
-
-    targetFiles: 'app-deploy.yaml'
-
-    encoding: 'auto'
-
-    writeBOM: true
-
-    actionOnMissing: 'warn'
-
-    keepToken: false
-
-    tokenPrefix: '__'
-
-    tokenSuffix: '__'
-
-    useLegacyPattern: false
-
-    enableTransforms: false
-
-    enableTelemetry: true
-
-
-
-
-- script: cat 02_kubernetes_aks/app-deploy.yaml
-
-
-
-
-- task: Kubernetes@1
-
-  displayName: Kubernetes Deploy
-
-  inputs:
-
-    connectionType: 'Azure Resource Manager'
-
-    azureSubscriptionEndpoint: 'Free Trial (0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
-
-    azureResourceGroup: 'kuberneteswebapp'
-
-    kubernetesCluster: 'KubernetesCluster'
-
-    namespace: 'default'
-
-    command: 'apply'
-
-    useConfigurationFile: true
-
-    configuration: '02_kubernetes_aks'
-
-    secretType: 'dockerRegistry'
-
-    containerRegistryType: 'Azure Container Registry'
-
-
-
-
-
+- task: Kubernetes@1
+  displayName: Kubernetes Deploy
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: 'Free Trail(0ed5b7b4-ad76-449d-8f5d-a79944c2eaa5)'
+    azureResourceGroup: 'kuberneteswebapp'
+    kubernetesCluster: 'KubernetesCluster'
+    namespace: 'default'
+    command: 'apply'
+    useConfigurationFile: true
+    configuration: '02_kubernetes_aks'
+    secretType: 'dockerRegistry'
+    containerRegistryType: 'Azure Container Registry'
